@@ -1,0 +1,50 @@
+## Example workflow — copy this into your own project's .github/workflows/ directory.
+## This is NOT used by this repo's CI. It's here as a reference for users.
+##
+## See README.md for full documentation.
+
+name: TSC Auto-Fix (Example)
+
+on:
+  push:
+    branches-ignore:
+      - 'fix/tsc-errors-*'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fix-types:
+    runs-on: ubuntu-latest
+
+    # Don't run on commits made by the bot
+    if: github.actor != 'tsc-fix-bot'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      # Push mode — commit fixes directly to the branch
+      - uses: Sachchaa/better-tsc-fixer@v1
+        with:
+          fix-mode: 'push'
+          llm-provider: 'anthropic'
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      ## --- OR ---
+
+      ## PR mode — open a pull request with fixes
+      # - uses: Sachchaa/better-tsc-fixer@v1
+      #   with:
+      #     fix-mode: 'pr'
+      #     llm-provider: 'openai'
+      #     openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     max-retries: '5'

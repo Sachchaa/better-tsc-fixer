@@ -1,0 +1,49 @@
+name: 'better-tsc-fixer'
+description: 'Automatically fix TypeScript type errors using AI (Anthropic Claude or OpenAI GPT)'
+author: 'Sachchaa'
+
+branding:
+  icon: 'tool'
+  color: 'blue'
+
+inputs:
+  fix-mode:
+    description: 'How to deliver fixes: "push" commits directly to the branch, "pr" opens a pull request'
+    required: false
+    default: 'push'
+  llm-provider:
+    description: 'LLM provider to use: "anthropic" or "openai"'
+    required: false
+    default: 'anthropic'
+  anthropic-api-key:
+    description: 'Anthropic API key (required if llm-provider is "anthropic")'
+    required: false
+  openai-api-key:
+    description: 'OpenAI API key (required if llm-provider is "openai")'
+    required: false
+  github-token:
+    description: 'GitHub token for pushing commits or creating PRs'
+    required: true
+    default: ${{ github.token }}
+  max-retries:
+    description: 'Maximum number of fix iterations'
+    required: false
+    default: '3'
+  tsconfig-path:
+    description: 'Path to tsconfig.json'
+    required: false
+    default: 'tsconfig.json'
+
+outputs:
+  fixed:
+    description: 'Whether any errors were fixed ("true" or "false")'
+  errors-before:
+    description: 'Number of TypeScript errors before fixing'
+  errors-after:
+    description: 'Number of TypeScript errors after fixing'
+  pr-url:
+    description: 'URL of the created PR (only in "pr" mode)'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

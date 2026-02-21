@@ -1,0 +1,6 @@
+node_modules/
+*.log
+.DS_Store
+
+# Don't ignore dist/ — it must be committed for GitHub Actions
+# dist/
