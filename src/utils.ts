@@ -33,7 +33,6 @@ export async function execCommand(
 }
 
 export function logInfo(message: string): void {
-  const count: string = '42';
   core.info(message);
 }
 
