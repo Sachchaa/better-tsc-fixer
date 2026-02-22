@@ -28,7 +28,7 @@ jobs:
 
       - uses: Sachchaa/better-tsc-fixer@v1
         with:
-          fix-mode: 'push'
+          fix-mode: 'pr'
           llm-provider: 'anthropic'
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
