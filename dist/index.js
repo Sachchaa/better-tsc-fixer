@@ -25715,12 +25715,12 @@ ${errorList}
 5. Do NOT include line numbers in your output.
 6. Do NOT add comments explaining the changes.`;
 }
-async function fixFile(filePath, errors, provider, apiKey) {
+async function fixFile(filePath, errors, provider, apiKey, model) {
     const original = fs.readFileSync(filePath, 'utf-8');
     const prompt = buildPrompt(filePath, original, errors);
     let response;
     try {
-        response = await (0, llm_1.callLLM)(prompt, provider, apiKey);
+        response = await (0, llm_1.callLLM)(prompt, provider, apiKey, model);
     }
     catch (err) {
         (0, utils_1.logError)(`LLM call failed for ${filePath}: ${err}`);
@@ -25751,7 +25751,7 @@ function applyFix(result) {
     fs.writeFileSync(result.file, result.fixed, 'utf-8');
     (0, utils_1.logInfo)(`Applied fix to ${result.file} (${result.errorsFixed} errors targeted)`);
 }
-async function fixLoop(maxRetries, tsconfigPath, provider, apiKey) {
+async function fixLoop(maxRetries, tsconfigPath, provider, apiKey, model) {
     const initialRun = await (0, tsc_1.runTsc)(tsconfigPath);
     const initialErrors = (0, tsc_1.parseTscErrors)(initialRun.output);
     const errorsBefore = initialErrors.length;
@@ -25778,7 +25778,7 @@ async function fixLoop(maxRetries, tsconfigPath, provider, apiKey) {
             (0, utils_1.logInfo)(`Attempt ${attempt}: ${errors.length} error(s) remaining across ${new Set(errors.map((e) => e.file)).size} file(s)`);
             const grouped = (0, tsc_1.groupErrorsByFile)(errors);
             for (const [filePath, fileErrors] of grouped) {
-                const result = await fixFile(filePath, fileErrors, provider, apiKey);
+                const result = await fixFile(filePath, fileErrors, provider, apiKey, model);
                 if (result) {
                     applyFix(result);
                     allResults.push(result);
@@ -25962,6 +25962,7 @@ const COMMIT_MESSAGE = 'fix(types): auto-fix TypeScript errors';
 function getInputs() {
     const fixMode = core.getInput('fix-mode') || 'push';
     const llmProvider = core.getInput('llm-provider') || 'anthropic';
+    const model = core.getInput('model') || '';
     const anthropicKey = core.getInput('anthropic-api-key');
     const openaiKey = core.getInput('openai-api-key');
     const githubToken = core.getInput('github-token', { required: true });
@@ -25981,6 +25982,7 @@ function getInputs() {
     return {
         fixMode: fixMode,
         llmProvider: llmProvider,
+        model,
         apiKey,
         githubToken,
         maxRetries,
@@ -26027,8 +26029,8 @@ async function run() {
             return;
         }
         const inputs = getInputs();
-        (0, utils_1.logInfo)(`Config: provider=${inputs.llmProvider}, mode=${inputs.fixMode}, retries=${inputs.maxRetries}`);
-        const summary = await (0, fixer_1.fixLoop)(inputs.maxRetries, inputs.tsconfigPath, inputs.llmProvider, inputs.apiKey);
+        (0, utils_1.logInfo)(`Config: provider=${inputs.llmProvider}, model=${inputs.model || '(default)'}, mode=${inputs.fixMode}, retries=${inputs.maxRetries}`);
+        const summary = await (0, fixer_1.fixLoop)(inputs.maxRetries, inputs.tsconfigPath, inputs.llmProvider, inputs.apiKey, inputs.model);
         core.setOutput('errors-before', String(summary.errorsBefore));
         core.setOutput('errors-after', String(summary.errorsAfter));
         if (summary.filesFixed.length === 0) {
@@ -26066,14 +26068,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.callLLM = callLLM;
 exports.extractCodeFromResponse = extractCodeFromResponse;
 const utils_1 = __nccwpck_require__(6087);
-async function callLLM(prompt, provider, apiKey) {
+const DEFAULT_MODELS = {
+    anthropic: 'claude-sonnet-4-20250514',
+    openai: 'gpt-4o',
+};
+async function callLLM(prompt, provider, apiKey, model) {
+    const resolvedModel = model || DEFAULT_MODELS[provider];
     if (provider === 'anthropic') {
-        return callAnthropic(prompt, apiKey);
+        return callAnthropic(prompt, apiKey, resolvedModel);
     }
-    return callOpenAI(prompt, apiKey);
+    return callOpenAI(prompt, apiKey, resolvedModel);
 }
-async function callAnthropic(prompt, apiKey) {
-    (0, utils_1.logInfo)('Calling Anthropic API...');
+async function callAnthropic(prompt, apiKey, model) {
+    (0, utils_1.logInfo)(`Calling Anthropic API (model: ${model})...`);
     const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -26082,7 +26089,7 @@ async function callAnthropic(prompt, apiKey) {
             'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
+            model,
             max_tokens: 8192,
             messages: [
                 {
@@ -26110,8 +26117,8 @@ async function callAnthropic(prompt, apiKey) {
         },
     };
 }
-async function callOpenAI(prompt, apiKey) {
-    (0, utils_1.logInfo)('Calling OpenAI API...');
+async function callOpenAI(prompt, apiKey, model) {
+    (0, utils_1.logInfo)(`Calling OpenAI API (model: ${model})...`);
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -26119,7 +26126,7 @@ async function callOpenAI(prompt, apiKey) {
             Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-            model: 'gpt-4o',
+            model,
             max_tokens: 8192,
             messages: [
                 {
