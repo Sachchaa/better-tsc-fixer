@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Don't run on commits made by the bot
-    if: github.actor != 'tsc-fix-bot'
+    if: github.actor != 'better-tsc-fixer[bot]'
 
     steps:
       - uses: actions/checkout@v4

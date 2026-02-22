@@ -16,7 +16,7 @@ import {
 import { buildPrBody, createPullRequest } from './pr';
 import { logInfo, logWarning } from './utils';
 
-const BOT_NAME = 'tsc-fix-bot';
+const BOT_NAME = 'better-tsc-fixer[bot]';
 const SKIP_MARKER = '[skip-tsc-fix]';
 const COMMIT_MESSAGE = 'fix(types): auto-fix TypeScript errors';
 

@@ -4,12 +4,12 @@ export async function configureGit(): Promise<void> {
   await execCommand('git', [
     'config',
     'user.name',
-    'tsc-fix-bot',
+    'better-tsc-fixer[bot]',
   ]);
   await execCommand('git', [
     'config',
     'user.email',
-    'tsc-fix-bot@users.noreply.github.com',
+    'better-tsc-fixer[bot]@users.noreply.github.com',
   ]);
   logInfo('Git configured with bot identity');
 }

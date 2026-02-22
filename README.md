@@ -34,7 +34,7 @@ permissions:
 jobs:
   fix-types:
     runs-on: ubuntu-latest
-    if: github.actor != 'tsc-fix-bot'
+    if: github.actor != 'better-tsc-fixer[bot]'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -124,7 +124,7 @@ Then add your API key as a repository secret (`Settings → Secrets → Actions`
 
 ## Safety
 
-- **No infinite loops** — skips if the last commit was authored by `tsc-fix-bot` or the commit message contains `[skip-tsc-fix]`
+- **No infinite loops** — skips if the last commit was authored by `better-tsc-fixer[bot]` or the commit message contains `[skip-tsc-fix]`
 - **Diff validation** — rejects LLM output if more than 50% of lines changed
 - **Max retries** — stops after N attempts (default 3) to prevent runaway API costs
 - **No force push** — never uses `git push --force`
