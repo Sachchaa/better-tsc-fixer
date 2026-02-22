@@ -4,7 +4,7 @@
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-better--tsc--fixer-blue?logo=github)](https://github.com/marketplace/actions/better-tsc-fixer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A GitHub Action that automatically detects and fixes TypeScript type errors using AI. Supports **Anthropic Claude** and **OpenAI GPT**. Delivers fixes via direct push or pull request — your choice.
+A GitHub Action that automatically detects and fixes TypeScript type errors using AI. Supports **Anthropic** and **OpenAI**. Delivers fixes via direct push or pull request — your choice.
 
 ## How It Works
 
@@ -124,7 +124,7 @@ Then add your API key as a repository secret (`Settings → Secrets → Actions`
 
 ## Safety
 
-- **No infinite loops** — skips if the last commit was authored by `tsc-fix-bot` or contains `[skip-tsc-fix]`
+- **No infinite loops** — skips if the last commit was authored by `tsc-fix-bot` or the commit message contains `[skip-tsc-fix]`
 - **Diff validation** — rejects LLM output if more than 50% of lines changed
 - **Max retries** — stops after N attempts (default 3) to prevent runaway API costs
 - **No force push** — never uses `git push --force`
