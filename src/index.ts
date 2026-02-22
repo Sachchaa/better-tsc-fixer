@@ -23,6 +23,7 @@ const COMMIT_MESSAGE = 'fix(types): auto-fix TypeScript errors';
 function getInputs(): ActionInputs {
   const fixMode = core.getInput('fix-mode') || 'push';
   const llmProvider = core.getInput('llm-provider') || 'anthropic';
+  const model = core.getInput('model') || '';
   const anthropicKey = core.getInput('anthropic-api-key');
   const openaiKey = core.getInput('openai-api-key');
   const githubToken = core.getInput('github-token', { required: true });
@@ -52,6 +53,7 @@ function getInputs(): ActionInputs {
   return {
     fixMode: fixMode as 'push' | 'pr',
     llmProvider: llmProvider as 'anthropic' | 'openai',
+    model,
     apiKey,
     githubToken,
     maxRetries,
@@ -120,7 +122,7 @@ async function run(): Promise<void> {
 
     const inputs = getInputs();
     logInfo(
-      `Config: provider=${inputs.llmProvider}, mode=${inputs.fixMode}, retries=${inputs.maxRetries}`,
+      `Config: provider=${inputs.llmProvider}, model=${inputs.model || '(default)'}, mode=${inputs.fixMode}, retries=${inputs.maxRetries}`,
     );
 
     const summary = await fixLoop(
@@ -128,6 +130,7 @@ async function run(): Promise<void> {
       inputs.tsconfigPath,
       inputs.llmProvider,
       inputs.apiKey,
+      inputs.model,
     );
 
     core.setOutput('errors-before', String(summary.errorsBefore));

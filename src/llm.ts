@@ -1,22 +1,30 @@
 import { LLMResponse } from './types';
 import { logInfo } from './utils';
 
+const DEFAULT_MODELS: Record<string, string> = {
+  anthropic: 'claude-sonnet-4-20250514',
+  openai: 'gpt-4o',
+};
+
 export async function callLLM(
   prompt: string,
   provider: 'anthropic' | 'openai',
   apiKey: string,
+  model: string,
 ): Promise<LLMResponse> {
+  const resolvedModel = model || DEFAULT_MODELS[provider];
   if (provider === 'anthropic') {
-    return callAnthropic(prompt, apiKey);
+    return callAnthropic(prompt, apiKey, resolvedModel);
   }
-  return callOpenAI(prompt, apiKey);
+  return callOpenAI(prompt, apiKey, resolvedModel);
 }
 
 async function callAnthropic(
   prompt: string,
   apiKey: string,
+  model: string,
 ): Promise<LLMResponse> {
-  logInfo('Calling Anthropic API...');
+  logInfo(`Calling Anthropic API (model: ${model})...`);
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -26,7 +34,7 @@ async function callAnthropic(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model,
       max_tokens: 8192,
       messages: [
         {
@@ -67,8 +75,9 @@ async function callAnthropic(
 async function callOpenAI(
   prompt: string,
   apiKey: string,
+  model: string,
 ): Promise<LLMResponse> {
-  logInfo('Calling OpenAI API...');
+  logInfo(`Calling OpenAI API (model: ${model})...`);
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -77,7 +86,7 @@ async function callOpenAI(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o',
+      model,
       max_tokens: 8192,
       messages: [
         {

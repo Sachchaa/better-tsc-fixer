@@ -15,6 +15,9 @@ inputs:
     description: 'LLM provider to use: "anthropic" or "openai"'
     required: false
     default: 'anthropic'
+  model:
+    description: 'Model name to use (e.g. "claude-sonnet-4-20250514", "gpt-4o"). Defaults to the best model for the chosen provider.'
+    required: false
   anthropic-api-key:
     description: 'Anthropic API key (required if llm-provider is "anthropic")'
     required: false

@@ -53,13 +53,14 @@ async function fixFile(
   errors: TscError[],
   provider: 'anthropic' | 'openai',
   apiKey: string,
+  model: string,
 ): Promise<FixResult | null> {
   const original = fs.readFileSync(filePath, 'utf-8');
   const prompt = buildPrompt(filePath, original, errors);
 
   let response;
   try {
-    response = await callLLM(prompt, provider, apiKey);
+    response = await callLLM(prompt, provider, apiKey, model);
   } catch (err) {
     logError(`LLM call failed for ${filePath}: ${err}`);
     return null;
@@ -106,6 +107,7 @@ export async function fixLoop(
   tsconfigPath: string,
   provider: 'anthropic' | 'openai',
   apiKey: string,
+  model: string,
 ): Promise<FixSummary> {
   const initialRun = await runTsc(tsconfigPath);
   const initialErrors = parseTscErrors(initialRun.output);
@@ -143,7 +145,7 @@ export async function fixLoop(
       const grouped = groupErrorsByFile(errors);
 
       for (const [filePath, fileErrors] of grouped) {
-        const result = await fixFile(filePath, fileErrors, provider, apiKey);
+        const result = await fixFile(filePath, fileErrors, provider, apiKey, model);
         if (result) {
           applyFix(result);
           allResults.push(result);

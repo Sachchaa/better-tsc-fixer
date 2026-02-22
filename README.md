@@ -57,6 +57,7 @@ Then add your API key as a repository secret (`Settings → Secrets → Actions`
 |---|---|---|---|
 | `fix-mode` | How to deliver fixes: `push` (commit to branch) or `pr` (open a pull request) | No | `push` |
 | `llm-provider` | LLM provider: `anthropic` or `openai` | No | `anthropic` |
+| `model` | Model name to use (e.g. `claude-sonnet-4-20250514`, `gpt-4o`) | No | Best model for provider |
 | `anthropic-api-key` | Anthropic API key | If provider is `anthropic` | — |
 | `openai-api-key` | OpenAI API key | If provider is `openai` | — |
 | `github-token` | GitHub token for pushing / creating PRs | Yes | `${{ github.token }}` |
@@ -91,6 +92,17 @@ Then add your API key as a repository secret (`Settings → Secrets → Actions`
     fix-mode: 'pr'
     llm-provider: 'openai'
     openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### Custom model
+
+```yaml
+- uses: Sachchaa/better-tsc-fixer@v1
+  with:
+    llm-provider: 'anthropic'
+    model: 'claude-haiku-4-20250514'
+    anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
     github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
