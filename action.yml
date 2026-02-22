@@ -3,7 +3,7 @@ description: 'Automatically fix TypeScript type errors using AI (Anthropic Claud
 author: 'Sachchaa'
 
 branding:
-  icon: 'tool'
+  icon: 'settings'
   color: 'blue'
 
 inputs:
