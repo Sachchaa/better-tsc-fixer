@@ -25835,12 +25835,12 @@ async function configureGit() {
     await (0, utils_1.execCommand)('git', [
         'config',
         'user.name',
-        'tsc-fix-bot',
+        'better-tsc-fixer[bot]',
     ]);
     await (0, utils_1.execCommand)('git', [
         'config',
         'user.email',
-        'tsc-fix-bot@users.noreply.github.com',
+        'better-tsc-fixer[bot]@users.noreply.github.com',
     ]);
     (0, utils_1.logInfo)('Git configured with bot identity');
 }
@@ -25956,7 +25956,7 @@ const fixer_1 = __nccwpck_require__(3910);
 const git_1 = __nccwpck_require__(3506);
 const pr_1 = __nccwpck_require__(5854);
 const utils_1 = __nccwpck_require__(6087);
-const BOT_NAME = 'tsc-fix-bot';
+const BOT_NAME = 'better-tsc-fixer[bot]';
 const SKIP_MARKER = '[skip-tsc-fix]';
 const COMMIT_MESSAGE = 'fix(types): auto-fix TypeScript errors';
 function getInputs() {
@@ -26347,6 +26347,7 @@ async function execCommand(command, args = [], options = {}) {
     return { exitCode, stdout, stderr };
 }
 function logInfo(message) {
+    const count = "42";
     core.info(message);
 }
 function logWarning(message) {
