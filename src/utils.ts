@@ -4,7 +4,12 @@ import * as exec from '@actions/exec';
 export async function execCommand(
   command: string,
   args: string[] = [],
-  options: { silent?: boolean; ignoreReturnCode?: boolean; cwd?: string } = {},
+  options: {
+    silent?: boolean;
+    ignoreReturnCode?: boolean;
+    cwd?: string;
+    env?: Record<string, string>;
+  } = {},
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   let stdout = '';
   let stderr = '';
@@ -13,6 +18,7 @@ export async function execCommand(
     silent: options.silent ?? true,
     ignoreReturnCode: options.ignoreReturnCode ?? true,
     cwd: options.cwd,
+    env: options.env,
     listeners: {
       stdout: (data: Buffer) => {
         stdout += data.toString();

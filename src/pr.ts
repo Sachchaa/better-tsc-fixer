@@ -56,6 +56,10 @@ export async function createPullRequest(
     ],
     {
       silent: false,
+      env: {
+        ...process.env,
+        GH_TOKEN: githubToken,
+      },
     },
   );
 

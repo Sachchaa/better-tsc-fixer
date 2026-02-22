@@ -26214,6 +26214,10 @@ async function createPullRequest(baseBranch, headBranch, title, body, githubToke
         body,
     ], {
         silent: false,
+        env: {
+            ...process.env,
+            GH_TOKEN: githubToken,
+        },
     });
     if (exitCode !== 0) {
         throw new Error(`Failed to create PR: ${stderr}`);
@@ -26335,6 +26339,7 @@ async function execCommand(command, args = [], options = {}) {
         silent: options.silent ?? true,
         ignoreReturnCode: options.ignoreReturnCode ?? true,
         cwd: options.cwd,
+        env: options.env,
         listeners: {
             stdout: (data) => {
                 stdout += data.toString();
@@ -26347,7 +26352,6 @@ async function execCommand(command, args = [], options = {}) {
     return { exitCode, stdout, stderr };
 }
 function logInfo(message) {
-    const count = "42";
     core.info(message);
 }
 function logWarning(message) {
